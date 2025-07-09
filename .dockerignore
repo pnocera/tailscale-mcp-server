@@ -1,0 +1,72 @@
+# Git and version control
+.git
+.gitignore
+
+# Documentation
+README.md
+LICENSE.md
+*.md
+
+# Build artifacts
+tailscale-mcp-server
+tailscale-mcp-server-*
+bin/
+dist/
+build/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs and temporary files
+*.log
+logs/
+*.tmp
+*.temp
+/tmp/
+
+# Environment and configuration files
+.env
+.env.*
+config.json
+secrets.json
+*.key
+*.pem
+
+# Test files
+*_test.go
+testdata/
+
+# Docker files (don't include in context)
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# CI/CD files
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Claude and development artifacts
+.claude/
+.hive-mind/
+coordination/
+memory/
+claude*
+CLAUDE.md
+prompts.txt
+
+# API documentation (not needed in container)
+tailscale_api_docs/

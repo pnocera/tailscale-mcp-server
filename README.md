@@ -61,9 +61,77 @@ This MCP server provides **42 comprehensive tools** organized into logical categ
 ## 📦 Installation
 
 ### Prerequisites
-- Go 1.24 or later
 - Valid Tailscale account with API access
 - Tailscale API key or OAuth client credentials
+- Choose one deployment method:
+  - **Docker** (recommended) - Docker and Docker Compose
+  - **Binary** - Go 1.24 or later
+  - **Source** - Go 1.24 or later + Git
+
+### 🐳 Docker Deployment (Recommended)
+
+The easiest way to run the Tailscale MCP server is using Docker:
+
+#### Quick Start with Docker
+```bash
+# Using API key authentication
+docker run -d \
+  --name tailscale-mcp-server \
+  --restart unless-stopped \
+  -e TAILSCALE_API_KEY="tskey-api-..." \
+  -e TAILSCALE_TAILNET="your-tailnet" \
+  tailscale-mcp-server:latest
+
+# Using OAuth authentication
+docker run -d \
+  --name tailscale-mcp-server \
+  --restart unless-stopped \
+  -e TAILSCALE_CLIENT_ID="your-client-id" \
+  -e TAILSCALE_CLIENT_SECRET="your-client-secret" \
+  -e TAILSCALE_TAILNET="your-tailnet" \
+  tailscale-mcp-server:latest
+```
+
+#### Docker Compose (Recommended)
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd mcp
+```
+
+2. Create environment file:
+```bash
+# Copy example environment file
+cp .env.example .env
+
+# Edit with your credentials
+vim .env
+```
+
+3. Start the server:
+```bash
+# Build and start
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop the server
+docker-compose down
+```
+
+#### Building Docker Image Locally
+```bash
+# Build the image
+docker build -t tailscale-mcp-server:local .
+
+# Run with local image
+docker run -d \
+  --name tailscale-mcp-server \
+  -e TAILSCALE_API_KEY="tskey-api-..." \
+  tailscale-mcp-server:local
+```
 
 ### Build from Source
 
@@ -130,12 +198,41 @@ TAILSCALE_API_KEY="tskey-api-..." TAILSCALE_TAILNET="mycompany.com" ./tailscale-
 ### MCP Client Integration
 
 #### Claude Code Integration
+
+**With Docker:**
 ```bash
-# Add to Claude Code
+# Add Docker container to Claude Code
+claude mcp add tailscale docker run --rm -i \
+  -e TAILSCALE_API_KEY="tskey-api-..." \
+  tailscale-mcp-server:latest
+```
+
+**With Binary:**
+```bash
+# Add binary to Claude Code
 claude mcp add tailscale /path/to/tailscale-mcp-server
 ```
 
 #### Generic MCP Client Configuration
+
+**With Docker:**
+```json
+{
+  "mcpServers": {
+    "tailscale": {
+      "command": "docker",
+      "args": [
+        "run", "--rm", "-i",
+        "-e", "TAILSCALE_API_KEY=tskey-api-...",
+        "-e", "TAILSCALE_TAILNET=your-tailnet",
+        "tailscale-mcp-server:latest"
+      ]
+    }
+  }
+}
+```
+
+**With Binary:**
 ```json
 {
   "mcpServers": {
@@ -148,6 +245,25 @@ claude mcp add tailscale /path/to/tailscale-mcp-server
     }
   }
 }
+```
+
+#### Docker Container Management
+
+```bash
+# Check container status
+docker ps | grep tailscale-mcp-server
+
+# View container logs
+docker logs tailscale-mcp-server
+
+# Restart container
+docker restart tailscale-mcp-server
+
+# Update to latest image
+docker pull tailscale-mcp-server:latest
+docker stop tailscale-mcp-server
+docker rm tailscale-mcp-server
+# Then run with new image
 ```
 
 ## 📚 Tool Examples
@@ -381,6 +497,7 @@ go tool cover -html=coverage.out
 
 ### Building for Different Platforms
 
+#### Using Go Build
 ```bash
 # Linux
 GOOS=linux GOARCH=amd64 go build -o tailscale-mcp-server-linux ./cmd
@@ -390,6 +507,18 @@ GOOS=darwin GOARCH=amd64 go build -o tailscale-mcp-server-macos ./cmd
 
 # Windows
 GOOS=windows GOARCH=amd64 go build -o tailscale-mcp-server.exe ./cmd
+```
+
+#### Using Docker Multi-Platform Build
+```bash
+# Build for multiple architectures
+docker buildx create --use
+docker buildx build --platform linux/amd64,linux/arm64 \
+  -t tailscale-mcp-server:latest --push .
+
+# Build for specific platform
+docker build --platform linux/amd64 -t tailscale-mcp-server:amd64 .
+docker build --platform linux/arm64 -t tailscale-mcp-server:arm64 .
 ```
 
 ## 📊 Monitoring & Observability
@@ -405,6 +534,40 @@ The server provides structured logging for:
 - Monitor API usage in the Tailscale admin console
 - Track OAuth token usage and refresh cycles
 - Review audit logs for security compliance
+
+## 🐳 Docker Features
+
+### Security
+- **Multi-stage build** for minimal attack surface
+- **Scratch base image** (< 20MB final image)
+- **Non-root user** execution (UID 65534)
+- **Read-only filesystem** support
+- **No new privileges** security option
+- **Dropped capabilities** for enhanced security
+
+### Performance
+- **Optimized binary** with static linking
+- **Resource limits** (128MB RAM, 0.5 CPU by default)
+- **Health checks** for container monitoring
+- **Graceful shutdown** handling
+
+### Production Ready
+- **Automatic restarts** on failure
+- **Structured logging** to stdout/stderr
+- **Environment-based configuration**
+- **Multi-architecture support** (AMD64, ARM64)
+
+### Monitoring
+```bash
+# View real-time logs
+docker logs -f tailscale-mcp-server
+
+# Check health status
+docker inspect --format='{{.State.Health.Status}}' tailscale-mcp-server
+
+# Monitor resource usage
+docker stats tailscale-mcp-server
+```
 
 ## 🔗 Dependencies
 

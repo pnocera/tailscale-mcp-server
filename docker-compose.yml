@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  tailscale-mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: tailscale-mcp-server:latest
+    container_name: tailscale-mcp-server
+    restart: unless-stopped
+    
+    # Environment variables for Tailscale authentication
+    environment:
+      # Option 1: API Key authentication (recommended for personal use)
+      - TAILSCALE_API_KEY=${TAILSCALE_API_KEY}
+      
+      # Option 2: OAuth authentication (recommended for applications)
+      # - TAILSCALE_CLIENT_ID=${TAILSCALE_CLIENT_ID}
+      # - TAILSCALE_CLIENT_SECRET=${TAILSCALE_CLIENT_SECRET}
+      
+      # Optional: Specify tailnet (defaults to "-")
+      - TAILSCALE_TAILNET=${TAILSCALE_TAILNET:-}
+    
+    # Optional: Expose port for HTTP mode (if implemented)
+    # ports:
+    #   - "8080:8080"
+    
+    # Security configurations
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    
+    # Health check
+    healthcheck:
+      test: ["/tailscale-mcp-server", "--health-check"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.5'
+        reservations:
+          memory: 64M
+          cpus: '0.1'
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

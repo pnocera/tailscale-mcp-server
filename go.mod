@@ -4,10 +4,8 @@ go 1.24.0
 
 require (
 	github.com/mark3labs/mcp-go v0.33.0
-	tailscale.com/client/tailscale/v2 v2.0.0
+	tailscale.com/client/tailscale/v2 v2.0.0-20250616154411-35b8e02bd63e
 )
-
-replace tailscale.com/client/tailscale/v2 => ../
 
 require (
 	github.com/google/uuid v1.6.0 // indirect
