@@ -247,6 +247,33 @@ claude mcp add tailscale /path/to/tailscale-mcp-server
 }
 ```
 
+#### 🚀 Quick Deployment Scripts
+
+**Instant Setup:**
+```bash
+# Bash/Linux/macOS - Quick run with environment validation
+./scripts/quick-run.sh
+
+# PowerShell/Windows - Quick run with environment validation
+.\scripts\quick-run.ps1
+
+# Custom image
+./scripts/quick-run.sh ghcr.io/myuser/tailscale-mcp-server:v1.0.0
+```
+
+**Registry Publishing:**
+```bash
+# Bash - Build and push to registry
+./scripts/build-and-push.sh
+./scripts/build-and-push.sh ghcr.io/myuser v1.0.0
+./scripts/build-and-push.sh docker.io/myuser latest linux/amd64
+
+# PowerShell - Build and push to registry
+.\scripts\build-and-push.ps1
+.\scripts\build-and-push.ps1 -Registry "ghcr.io/myuser" -Tag "v1.0.0"
+.\scripts\build-and-push.ps1 -Registry "docker.io/myuser" -Platform "linux/amd64"
+```
+
 #### Docker Container Management
 
 ```bash
