@@ -1,6 +1,6 @@
 # Tailscale MCP Server
 
-A comprehensive MCP (Model Context Protocol) server for managing Tailscale resources using the official Tailscale Go client library v2. This server provides complete coverage of the Tailscale API with enhanced, self-descriptive tools powered by OpenAPI documentation.
+An MCP (Model Context Protocol) server for managing Tailscale resources using the official Tailscale Go client library v2. This server provides complete coverage of the Tailscale API with enhanced, self-descriptive tools powered by OpenAPI documentation.
 
 ## 🚀 Features
 
